@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>2° Informática 2 - Alice in Wonderland</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+/* RESET */
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+font-family:"Roboto",sans-serif;
+background:linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.85)), url("fundo.png");
+background-size:cover;
+background-position:center;
+background-attachment:fixed;
+color:white;
+overflow-x:hidden;
+}
+
+/* CANVAS */
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:-1;
+}
+
+/* BANNER ANIMADO */
+#banner{
+width:90%;
+height:250px;
+margin:20px auto;
+background:url("banner.png") center/cover no-repeat;
+border-radius:25px;
+box-shadow:0 10px 40px rgba(0,0,0,0.9);
+position:relative;
+overflow:hidden;
+}
+#banner::after{
+content:"";
+position:absolute;
+width:200%;
+height:200%;
+top:-50%;
+left:-50%;
+background:radial-gradient(circle, rgba(255,255,255,0.1) 10%, transparent 40%);
+animation:bannerMove 15s linear infinite;
+}
+@keyframes bannerMove{from{transform:rotate(0deg);} to{transform:rotate(360deg);}}
+
+/* HEADER */
+header{text-align:center;padding:10px;}
+header h1{font-size:2.2rem; color:#00ff00; text-shadow:0 0 10px #00ff00;}
+header p{opacity:0.8; font-size:1rem;}
+
+/* MENU */
+nav{text-align:center;margin:20px;}
+nav button{
+padding:10px 22px;
+margin:5px;
+border:none;
+border-radius:30px;
+background:linear-gradient(45deg,#111,#222);
+color:white;
+cursor:pointer;
+transition:0.3s;
+box-shadow:0 0 10px rgba(0,255,0,0.4);
+}
+nav button:hover{
+transform:scale(1.05);
+background:linear-gradient(45deg,#00ff00,#22ff22);
+color:black;
+box-shadow:0 0 20px #00ff00;
+}
+nav button.active{background:#00ff00;color:black;}
+
+/* SEÇÕES */
+section{
+max-width:1000px;
+margin:30px auto;
+padding:40px 20px;
+background:rgba(20,20,20,0.6);
+backdrop-filter:blur(12px);
+border-radius:20px;
+border:1px solid rgba(255,255,255,0.15);
+box-shadow:0 0 20px rgba(0,255,0,0.3), inset 0 0 10px rgba(255,255,255,0.1);
+display:none;
+}
+section.active{display:block;}
+section h2{text-align:center;margin-bottom:25px;color:#00ff00; font-size:1.8rem;}
+
+/* CHAPÉU */
+.hat{position:absolute;width:60px;top:-20px;right:-15px;animation:float 2s infinite alternate;}
+@keyframes float{0%{transform:translateY(0);}100%{transform:translateY(-12px);}}
+
+/* GALERIA */
+.galeria{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:15px;}
+.galeria img{width:100%; border-radius:12px; transition:0.4s; cursor:pointer; filter:grayscale(40%);}
+.galeria img:hover{transform:scale(1.1) rotate(2deg); filter:grayscale(0); box-shadow:0 0 20px #00ff00;}
+
+/* TIMER */
+#timer{font-size:2rem;text-align:center;color:#00ff00;text-shadow:0 0 5px #00ff00,0 0 15px #00ff00;}
+
+/* RELÓGIO DO COELHO */
+#rabbitClock{font-size:50px;text-align:center;margin-top:15px;animation:clockMove 1s infinite alternate;}
+@keyframes clockMove{0%{transform:rotate(-10deg);}100%{transform:rotate(10deg);}}
+
+/* REDES SOCIAIS */
+.redes-container{display:flex; justify-content:center; gap:25px; font-size:3rem;}
+.redes-container a{color:orange;}
+
+/* CARTAS 3D VOANDO */
+.card{
+position:fixed;
+font-size:35px;
+bottom:-50px;
+opacity:0.7;
+transform-style: preserve-3d;
+perspective:1000px;
+animation:flyCards linear infinite;
+}
+.card:nth-child(1){left:10%; animation-duration:12s;}
+.card:nth-child(2){left:30%; animation-duration:15s;}
+.card:nth-child(3){left:50%; animation-duration:18s;}
+.card:nth-child(4){left:70%; animation-duration:20s;}
+.card:nth-child(5){left:90%; animation-duration:22s;}
+@keyframes flyCards{
+0%{transform:translateY(0) rotateY(0deg);}
+100%{transform:translateY(-120vh) rotateY(720deg);}
+}
+
+/* MUSHROOMS */
+.mushroom{position:fixed;bottom:0;width:60px;animation:mushroomFloat 4s ease-in-out infinite;}
+.mushroom.left{left:5%;}
+.mushroom.right{right:5%;}
+@keyframes mushroomFloat{0%{transform:translateY(0);}50%{transform:translateY(-12px);}100%{transform:translateY(0);}}
+
+/* COELHO */
+#rabbit{position:fixed;bottom:20px;left:-100px;width:100px; z-index:5;animation:rabbitRun 25s linear infinite;}
+@keyframes rabbitRun{0%{left:-100px;transform:scaleX(1);}49%{left:110%;transform:scaleX(1);}50%{transform:scaleX(-1);}100%{left:-100px;transform:scaleX(-1);}}
+
+/* PORTAL */
+#portal{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%) scale(0);
+width:200px;
+height:200px;
+border-radius:50%;
+background:radial-gradient(circle, #00ff00 0%, #004400 70%, transparent 100%);
+z-index:20;
+pointer-events:none;
+opacity:0.9;
+box-shadow:0 0 50px #00ff00, 0 0 100px #00ff00 inset;
+animation:portalOpen 2s forwards;
+}
+@keyframes portalOpen{
+0%{transform:translate(-50%,-50%) scale(0); opacity:0;}
+50%{transform:translate(-50%,-50%) scale(1.2); opacity:0.8;}
+100%{transform:translate(-50%,-50%) scale(1); opacity:0;}
+}
+
+/* FOOTER */
+footer{text-align:center;padding:30px; opacity:0.7;}
+
+/* MODAL */
+.modal{display:none;position:fixed;z-index:10;padding-top:50px;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.9);}
+.modal-content{margin:auto;display:block;max-width:90%;max-height:80%;border-radius:12px;}
+.close{position:absolute;top:20px;right:30px;font-size:35px;cursor:pointer;}
+
+/* RESPONSIVO */
+@media (max-width:600px){
+header h1{font-size:1.6rem;}
+header p{font-size:0.9rem;}
+nav button{padding:8px 18px;font-size:0.85rem;}
+.galeria{gap:10px;}
+.card{font-size:25px;}
+.mushroom{width:40px;}
+#rabbit{width:70px;}
+.redes-container{font-size:2rem; gap:15px;}
+#timer{font-size:1.5rem;}
+#rabbitClock{font-size:35px;}
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="bg"></canvas>
+
+<div id="banner"></div>
+
+<header>
+<h1>2° Informática 2</h1>
+<p>Escola Ary Pimenta Bugelli</p>
+</header>
+
+<nav>
+<button class="tab active" data-tab="sobre">Sobre</button>
+<button class="tab" data-tab="galeria">Galeria</button>
+<button class="tab" data-tab="formatura">Formatura</button>
+<button class="tab" data-tab="redes">Redes Sociais</button>
+</nav>
+
+<section id="sobre" class="active">
+<img class="hat" src="chapeu.png">
+<h2>Sobre a Turma</h2>
+<p>Técnicos em Informática 2025 / 2027.</p>
+</section>
+
+<section id="galeria">
+<img class="hat" src="chapeu.png">
+<h2>Momentos da Turma</h2>
+<div class="galeria">
+<img src="foto1.png">
+<img src="foto2.png">
+<img src="foto3.png">
+<img src="foto4.png">
+</div>
+</section>
+
+<section id="formatura">
+<img class="hat" src="chapeu.png">
+<h2>Contagem para a Formatura</h2>
+<p id="timer"></p>
+<div id="rabbitClock">⏱</div>
+</section>
+
+<section id="redes">
+<img class="hat" src="chapeu.png">
+<h2>Redes Sociais</h2>
+<div class="redes-container">
+<a href="https://www.instagram.com/2.informatica_2/" target="_blank"><i class="fab fa-instagram"></i></a>
+<a href="https://www.instagram.com/escolaarypimenta/" target="_blank"><i class="fab fa-instagram"></i></a>
+<a href="https://wa.me/55992373051" target="_blank"><i class="fab fa-whatsapp"></i></a>
+</div>
+</section>
+
+<footer>© 2026 João Victor Silverio Avila</footer>
+
+<!-- PORTAL -->
+<div id="portal"></div>
+
+<!-- CARTAS 3D -->
+<div class="card">♠</div>
+<div class="card">♥</div>
+<div class="card">♦</div>
+<div class="card">♣</div>
+<div class="card">🂡</div>
+
+<!-- MUSHROOMS -->
+<img class="mushroom left" src="mushroom.png">
+<img class="mushroom right" src="mushroom.png">
+
+<!-- COELHO -->
+<img id="rabbit" src="rabbit.png">
+
+<!-- MODAL -->
+<div id="imgModal" class="modal">
+<span class="close">&times;</span>
+<img class="modal-content" id="imgAmpliada">
+</div>
+
+<script>
+/* ABAS */
+const tabs=document.querySelectorAll(".tab")
+const sections=document.querySelectorAll("section")
+tabs.forEach(btn=>{
+btn.onclick=()=>{
+tabs.forEach(b=>b.classList.remove("active"))
+btn.classList.add("active")
+let target=btn.dataset.tab
+sections.forEach(s=>s.classList.remove("active"))
+document.getElementById(target).classList.add("active")
+}
+})
+
+/* TIMER */
+const date=new Date("Dec 11, 2027 00:00:00").getTime()
+const timer=document.getElementById("timer")
+setInterval(()=>{
+let now=new Date().getTime()
+let dist=date-now
+let d=Math.floor(dist/(1000*60*60*24))
+let h=Math.floor((dist%(1000*60*60*24))/(1000*60*60))
+let m=Math.floor((dist%(1000*60*60))/(1000*60))
+let s=Math.floor((dist%(1000*60))/1000)
+timer.innerHTML=`${d}d ${h}h ${m}m ${s}s`
+},1000)
+
+/* PORTAL AO CARREGAR */
+window.addEventListener('load', ()=>{
+  const portal=document.getElementById('portal');
+  portal.style.display='block';
+  setTimeout(()=>{portal.style.display='none';},2000);
+});
+
+/* PARTICULAS MAGICAS */
+const canvas=document.getElementById("bg")
+const ctx=canvas.getContext("2d")
+canvas.width=window.innerWidth
+canvas.height=window.innerHeight
+let particles=[]
+class Particle{
+constructor(){this.x=Math.random()*canvas.width; this.y=Math.random()*canvas.height;
+this.vx=Math.random()*1-0.5; this.vy=Math.random()*1-0.5; this.size=Math.random()*3;}
+move(){this.x+=this.vx; this.y+=this.vy;}
+draw(){ctx.fillStyle=`hsl(${Math.random()*360},100%,80%)`; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill();}
+}
+for(let i=0;i<80;i++){particles.push(new Particle());}
+function animate(){
+ctx.clearRect(0,0,canvas.width,canvas.height)
+particles.forEach(p=>{p.move();p.draw();})
+requestAnimationFrame(animate)
+}
+animate()
+
+/* GALERIA MODAL */
+const modal=document.getElementById("imgModal")
+const modalImg=document.getElementById("imgAmpliada")
+document.querySelectorAll(".galeria img").forEach(img=>{
+img.onclick=()=>{modal.style.display="block"; modalImg.src=img.src}
+})
+document.querySelector(".close").onclick=()=>{modal.style.display="none"}
+modal.onclick=()=>{modal.style.display="none"}
+</script>
+
+</body>
+</html>
